@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { StyleSheet, Text, View, Animated, Dimensions, Easing } from "react-native";
 import DvdLogo from "./assets/dvdlogo";
-import { StatusBar } from "expo-status-bar";
 
 export default function App() {
   const IMAGE_WIDTH = 52;
@@ -9,13 +8,16 @@ export default function App() {
   const SCREEN_DIMENSIONS = Dimensions.get("window");
 
   const BOUND_X = SCREEN_DIMENSIONS.width - IMAGE_WIDTH;
-  const BOUND_Y = SCREEN_DIMENSIONS.height - IMAGE_HEIGHT - StatusBar.length;
+  const BOUND_Y = SCREEN_DIMENSIONS.height - IMAGE_HEIGHT;
+  color = ["#fff","green","blue","yellow","purple","magenta"]
 
   const translateX = useRef(new Animated.Value(0)).current; 
   const translateY = useRef(new Animated.Value(0)).current;
 
   const [directionX, setDirectionX] = useState(1)
   const [directionY, setDirectionY] = useState(1)
+  const [currColor, setCurrColor] = useState(0)
+
 
   useEffect(() => {
     translateX.addListener(tx=>{
@@ -23,8 +25,8 @@ export default function App() {
       else if (tx.value <= 5) setDirectionX(1);
     })
     translateY.addListener(ty=>{
-      if (ty.value >= BOUND_Y-5) setDirectionY(-1);
-      else if (ty.value <= 5) setDirectionY(1);
+      if (ty.value >= BOUND_Y - 20) setDirectionY(-1);
+      else if (ty.value <= 5) setDirectionY(1);  
     })
   },[]);
 
@@ -35,6 +37,7 @@ export default function App() {
       timing: Easing.linear,
       useNativeDriver: true,
     }).start()
+    setCurrColor(x=>(x+1)%color.length)
   }, [directionX])
 
   useEffect(() => {
@@ -44,6 +47,7 @@ export default function App() {
       timing: Easing.linear,
       useNativeDriver: true,
     }).start()
+    setCurrColor(x=>(x+1)%color.length)
   }, [directionY])
 
   return (
@@ -57,7 +61,7 @@ export default function App() {
           left: 0,
           transform: [{ translateX }, { translateY }],
         }}
-      ><DvdLogo width={IMAGE_WIDTH} height={IMAGE_HEIGHT} />
+      ><DvdLogo width={IMAGE_WIDTH} height={IMAGE_HEIGHT} color={color[currColor]}/>
       </Animated.View>
     </Animated.View>
   );
